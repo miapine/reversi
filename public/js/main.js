@@ -19,15 +19,20 @@ if('undefined' == typeof username || !username){
 	username = "Anonymous_"+Math.random();
 }
 
-var chat_room = 'One_Room';
-
+var chat_room = getURLParameters('game_id');
+if('undefined' == typeof chat_room || !chat_room){
+	chat_room = 'lobby';
+}
 /*connect to the socket server*/
 
 var socket = io.connect();
+/*what to do when the server sends a log message*/
 
 socket.on('log',function(array){
 	console.log.apply(console,array);
 });
+
+/*what to do when the server responds that sommeone joined a room*/
 
 socket.on('join_room_response', function(payload){
 	if(payload.result == 'fail'){
@@ -35,7 +40,85 @@ socket.on('join_room_response', function(payload){
 		return;
 	}
 
-	$('#messages').append('<p>New User Joined The Room: '+payload.username+'</p>');
+	if(payload.socket_id == socket.id){
+		return;
+	}
+
+	//if someone joined the room, add a new row to the lobby table
+
+	var dom_elements = $('.socket_'+payload.socket_id);
+	//if we dont already have an entry for this person
+	if(dom_elements.length == 0){
+		var nodeA = $('<div></div>');
+		nodeA.addClass('socket_'+payload.socket_id);
+		var nodeB = $('<div></div>');
+		nodeB.addClass('socket_'+payload.socket_id);
+		var nodeC = $('<div></div>');
+		nodeC.addClass('socket_'+payload.socket_id);
+
+		nodeA.addClass('w-100');
+		
+		nodeB.addClass('col-9 text-right');
+		nodeB.append('<h4>'+payload.username+'</h4>');
+
+		nodeC.addClass('col-3 text-left');
+		var buttonC = makeInviteButton();
+		nodeC.append(buttonC);
+
+		nodeA.hide()
+		nodeB.hide()
+		nodeC.hide()
+		$('#players').append(nodeA,nodeB,nodeC);
+		nodeA.slideDown(1000);
+		nodeB.slideDown(1000);
+		nodeC.slideDown(1000);
+
+	}
+	else{
+		var buttonC = makeInviteButton();
+		$('.socket_'+payload.socket_id+' button').replaceWith(buttonC);
+		dom_elements.slideDown(1000);
+
+	}
+
+	var newHTML= '<p>'+payload.username+' just entered the lobby</p>';
+	var newNode= $(newHTML);
+	newNode.hide();
+	$('#messages').append(newNode);
+	newNode.slideDown(1000);
+
+	
+});
+
+//what to do when someone leaves
+socket.on('player_disconnected', function(payload){
+	if(payload.result == 'fail'){
+		alert(payload.message);
+		return;
+	}
+
+	if(payload.socket_id == socket.id){
+		return;
+	}
+
+	//if someone left the room, animate out all their content
+
+	var dom_elements = $('.socket_'+payload.socket_id);
+	//if  something exists
+	if(dom_elements.length == 0){
+		dom_elements.slideUp(1000);
+		
+
+	}
+	
+	//message that player has left
+	var newHTML= '<p>'+payload.username+' has left the lobby</p>';
+	var newNode= $(newHTML);
+	newNode.hide();
+	$('#messages').append(newNode);
+	newNode.slideDown(1000);
+
+	
 });
 
 socket.on('send_message_response', function(payload){
@@ -59,6 +142,13 @@ function send_message(){
 
 
 }
+
+function makeInviteButton(){
+	var newHTML = '<button type=\'button\' class=\'btn btn-outline-primary\'>Invite</button>';
+	var newNode= $(newHTML);
+	return(newNode);
+}
+
 
 $(function(){
 	var payload = {};
