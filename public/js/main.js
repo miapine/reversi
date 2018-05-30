@@ -102,10 +102,11 @@ socket.on('player_disconnected', function(payload){
 	}
 
 	//if someone left the room, animate out all their content
+	
 
 	var dom_elements = $('.socket_'+payload.socket_id);
 	//if  something exists
-	if(dom_elements.length == 0){
+	if(dom_elements.length != 0){
 		dom_elements.slideUp(1000);
 		
 

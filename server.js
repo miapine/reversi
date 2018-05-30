@@ -172,6 +172,7 @@ io.sockets.on('connection', function (socket){
 
 	});
 
+
 		socket.on('disconnect', function(){
 		log('Client disconnected '+JSON.stringify(players[socket.id]));
 
