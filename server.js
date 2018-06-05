@@ -888,5 +888,32 @@ function send_game_update(socket, game_id, message){
 
 	/* check to see if the game is over */
 
+	var row, column;
+	var count = 0;
+	for(row = 0; row < 8 ; row++){
+		for(column = 0; column <8; column++){
+			if(games[game_id].board[row][column] != ' '){count++;}
+		}
+	}
+	if(count == 64){
+		var success_data = {
+			result:'success',
+			game: games[game_id],
+			who_won: 'everyone',
+			game_id: game_id
+		};
+		io.in(game_id).emit('game_over', success_data);
+	
+
+	//delete old games after an hour
+
+		setTimeout(function(id){
+			return function(){
+				delete games[id];
+			}
+		}(game_id),60*60*1000);
+	}else{
+		//console.log("current count = "+count);
+	}
 
 };
