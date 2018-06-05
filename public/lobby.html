@@ -42,26 +42,17 @@
 
       </div>
 
-      <div class='row'>
+       <div class='row'>
         <div class='col text-left'>
           <h3>Messages</h3>
-            <div id='messages'>
-            </div>
-        </div>
-      </div>
-    </div>
+          <form class='form-inline' onsubmit='send_message(); return false;'>
 
-     <div class='row'>
-        <div class='col'>
-          <form onsubmit='send_message(); return false;'>
-
-          <div class ='form-group'>
             <label for='send_message_holder' class='col-form-label sr-only'>Enter Your Chat Message</label>
 
-            <input class='form-control' type='text' value''
+            <input class='form-control mx-auto w-75' type='text' value''
                     id='send_message_holder' placeholder='Enter Your Chat Message' 
                     autocomplete='off' />
-          </div>
+          
           <button type='submit' class='btn btn-defualt btn-primary'>Send</button>
 
           </form>
@@ -69,6 +60,17 @@
       </div>
     </div>
 
+
+      <div class='row'>
+        <div class='col text-left'>
+          
+            <div id='messages'>
+            </div>
+        </div>
+      </div>
+    </div>
+
+    
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script
